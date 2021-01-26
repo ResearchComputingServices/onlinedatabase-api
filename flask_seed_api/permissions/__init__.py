@@ -1,1 +1,0 @@
-from flask_seed_api.permissions.permission import *
