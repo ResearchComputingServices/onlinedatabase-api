@@ -41,5 +41,5 @@ def create_app(package_name):
 
 def register_blueprints(app):
     from flask_seed_api.web.views import flask_seed_bp
-    app.register_blueprint(flask_seed_bp, url_prefix='/flask_seed_api')
+    app.register_blueprint(flask_seed_bp, url_prefix='/onlinedatabase_api')
     return app
