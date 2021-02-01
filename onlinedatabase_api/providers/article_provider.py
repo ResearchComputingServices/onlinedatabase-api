@@ -19,3 +19,11 @@ class ArticleProvider(BaseProvider):
         db.session.add(article)
         db.session.commit()
         return article
+
+    def update(self, data, article):
+        article.name = data.get('name')
+        article.author = data.get('author')
+        article.publisher = data.get('publisher')
+        article.year = data.get('year')
+        article.language = data.get('language')
+        return article

@@ -10,6 +10,7 @@ class Article(BaseModel):
     author = db.Column(db.String())
     year = db.Column(db.String())
     publisher = db.Column(db.String())
+    language = db.Column(db.String())
 
     def __init__(self, item):
         BaseModel.__init__(self, item)
@@ -17,6 +18,7 @@ class Article(BaseModel):
         self.author = item.get('author')
         self.year = item.get('year')
         self.publisher = item.get('publisher')
+        self.language = item.get('language')
 
     def __repr__(self):
         return '<article %r>' % self.name
@@ -33,3 +35,4 @@ class ArticleSchema(BaseModelSchema):
     author = fields.String()
     year = fields.String()
     publisher = fields.String()
+    language = fields.String()
