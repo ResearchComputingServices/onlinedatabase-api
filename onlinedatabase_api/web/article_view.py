@@ -16,11 +16,13 @@ article_schema_many = ArticleSchema(many=True)
 
 provider = ArticleProvider()
 
+
 @onlinedatabase_bp.route("/articles/count", methods=['GET'])
 @crossdomain(origin='*')
 @authentication
 def get_article_count():
     return provider.get_count(Article)
+
 
 @onlinedatabase_bp.route("/articles", methods=['GET'])
 @crossdomain(origin='*')
@@ -28,25 +30,80 @@ def get_article_count():
 def get_article():
     try:
         id = request.args.get('id')
-        if id:
-            properties = Article.query.filter_by(id=id).first()
-            result = article_schema.dump(properties)
-            return jsonify(result)
-
         name = request.args.get('name')
-        if name:
-            properties = Article.query.filter_by(name=name).first()
-            result = article_schema.dump(properties)
-            return jsonify(result)
+        author = request.args.get('author')
+        year = request.args.get('year')
+        publisher = request.args.get('publisher')
+        language = request.args.get('language')
 
         properties = provider.query_all(Article)
-        result = article_schema_many.dump(properties)
+
+        if id:
+            result = article_schema.dump(properties)
+            return jsonify(result)
+
+        result_list = []
+        if name:
+            name = name.lower()
+            name_ids = []
+            for res_name in properties:
+                if name in res_name.name.lower():
+                    name_ids.append(res_name.id)
+            result_list.append(name_ids)
+
+        if author:
+            author = author.lower()
+            author_ids = []
+            for res_author in properties:
+                if author in res_author.author.lower():
+                    author_ids.append(res_author.id)
+            result_list.append(author_ids)
+
+        if publisher:
+            publisher = publisher.lower()
+            publisher_ids = []
+            for res_publisher in properties:
+                if publisher in res_publisher.publisher.lower():
+                    publisher_ids.append(res_publisher.id)
+            result_list.append(publisher_ids)
+        if year:
+            year_ids = []
+            for res_year in properties:
+                if year in res_year.year:
+                    year_ids.append(res_year.id)
+            result_list.append(year_ids)
+
+        if language:
+            language = language.lower()
+            language_ids = []
+            for res_language in properties:
+                if language in res_language.language.lower():
+                    language_ids.append(res_language.id)
+            result_list.append(language_ids)
+
+        if len(result_list) > 2:
+            intersection_fields_result_list = list(set(result_list[0]).intersection(set(result_list[1])))
+            for i in range(2, len(result_list)):
+                intersection_fields_result_list = list(set(intersection_fields_result_list).intersection(set(result_list[i])))
+        elif len(result_list) == 2:
+            intersection_fields_result_list = list(set(result_list[0]).intersection(set(result_list[1])))
+        elif len(result_list) == 1:
+            intersection_fields_result_list = result_list[0]
+        else:
+            result = article_schema_many.dump(properties)
+            return jsonify(result)
+        result = []
+        for specific_id in intersection_fields_result_list:
+            specific_properties = Article.query.filter_by(id=int(specific_id)).first()
+            specific_result = article_schema.dump(specific_properties)
+            result.append(specific_result)
         response = jsonify(result)
     except Exception as e:
         error = {"exception": str(e), "message": "Exception has occurred. Check the format of the request."}
         response = Response(json.dumps(error), 500, mimetype="application/json")
 
     return response
+
 
 @onlinedatabase_bp.route("/articles", methods=['POST'])
 @crossdomain(origin='*')
@@ -64,6 +121,7 @@ def add_article():
 
     return response
 
+
 @onlinedatabase_bp.route("/articles", methods=['PUT'])
 @crossdomain(origin='*')
 @authentication
@@ -76,7 +134,7 @@ def update_article():
         if article:
             if data.get('id') is None:
                 data['id'] = article.id
-            provider.update(data,article)
+            provider.update(data, article)
             db.session.commit()
             response = Response(json.dumps(data), 200, mimetype="application/json")
         else:
@@ -108,6 +166,7 @@ def delete_article():
         response = Response(json.dumps(error), 500, mimetype="application/json")
     return response
 
+
 @onlinedatabase_bp.route("/articles/export", methods=['GET'])
 @crossdomain(origin='*')
 @authentication
@@ -118,7 +177,7 @@ def export_articles():
             records = []
             articles = Article.query.all()
             for i in range(len(articles)):
-                s_a = Article.query.filter_by(id=(i+1)).first()
+                s_a = Article.query.filter_by(id=(i + 1)).first()
 
                 records.append({
                     "ID": s_a.id,
@@ -148,7 +207,7 @@ def export_articles():
                 writer.save()
             output.seek(0)
             return send_file(output,
-                             attachment_filename= "Articles" + '.xlsx',
+                             attachment_filename="Articles" + '.xlsx',
                              mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                              as_attachment=True, cache_timeout=-1)
         except Exception as e:
@@ -175,13 +234,13 @@ def export_articles():
                 "Publisher": s_a.publisher,
                 "Year": s_a.year,
                 "Language": s_a.language
-                }]
+            }]
 
             output = BytesIO()
             with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
                 pd.DataFrame(specific_user_info).to_excel(writer,
-                                               sheet_name="articles",
-                                               index=False)
+                                                          sheet_name="articles",
+                                                          index=False)
                 workbook = writer.book
                 worksheet = writer.sheets["articles"]
                 format = workbook.add_format()
@@ -197,12 +256,13 @@ def export_articles():
 
             output.seek(0)
             return send_file(output,
-                             attachment_filename= "Articles" + '.xlsx',
+                             attachment_filename="Articles" + '.xlsx',
                              mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                              as_attachment=True, cache_timeout=-1)
         except Exception as e:
             response = Response(json.dumps(e), 404, mimetype="application/json")
             return response
+
 
 @onlinedatabase_bp.route("/articles/upload", methods=['POST'])
 @crossdomain(origin='*')
