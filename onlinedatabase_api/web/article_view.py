@@ -39,6 +39,7 @@ def get_article():
         properties = provider.query_all(Article)
 
         if id:
+            properties = Article.query.filter_by(id=id).first()
             result = article_schema.dump(properties)
             return jsonify(result)
 
