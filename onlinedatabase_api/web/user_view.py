@@ -49,7 +49,7 @@ def login():
                 'name': name,
                 'first_name': first_name,
                 'last_name': last_name,
-                'roles': [{ 'name': 'Test Taker'}],
+                'roles': [{ 'name': 'Contributor'}],
                 'fields': []
             })
             return jsonify(user_schema.dump(user))
@@ -521,7 +521,7 @@ def __import_user_in_db(d):
                 user_data["last_name"] = d["Last Name"]
                 user_data["id"] = provider.generate_id(field=User.id)
                 user = User(user_data)
-                role = Role.query.filter_by(name="Test Taker").first()
+                role = Role.query.filter_by(name="Contributor").first()
                 user.roles.append(role)
                 user.fields.append(UserField(
                     {"name": "student_id", "type": "text", "value": str(d["Student ID"]).replace(".0", "") if not math.isnan(d["Student ID"]) else None, "user_id": user.id}))
@@ -605,7 +605,7 @@ def get_demographic_questionnaire():
 
         user = provider.get_authenticated_user()
         if user:
-            is_test_taker = provider.has_role(user, 'Test Taker')
+            is_test_taker = provider.has_role(user, 'Contributor')
             if is_test_taker:
                 test_taker_id =user.id
                 properties = provider.get_demographic_fields(test_taker_id, start_datetime_rq, end_datetime_rq)
