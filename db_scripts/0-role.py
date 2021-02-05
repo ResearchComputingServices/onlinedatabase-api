@@ -18,7 +18,7 @@ def populate(db, models, providers):
     #Creates test taker role
     data = {
         'id': 2,
-        'name' : 'Contributor',
+        'name' : 'Researcher',
         'immutable': True
     }
 
@@ -28,7 +28,7 @@ def populate(db, models, providers):
     # Creates test developer role
     data = {
         'id': 3,
-        'name': 'Guest',
+        'name': 'Contributor',
         'immutable': True
     }
 
