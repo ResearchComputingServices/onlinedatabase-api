@@ -401,6 +401,38 @@ def export_articles():
             response = Response(json.dumps(e), 404, mimetype="application/json")
             return response
 
+@onlinedatabase_bp.route("/articles/citation", methods=['GET'])
+@crossdomain(origin='*')
+@authentication
+def generate_citation_articles():
+    specific_ids = request.args.get('id')
+    if specific_ids is not None:
+        try:
+            name = request.args.get('name')
+            if name is None:
+                article_id = request.args.get('id')
+                s_a = Article.query.filter_by(id=article_id).first()
+                name = s_a.name
+                s_a = Article.query.filter_by(name=name).first()
+            else:
+                article_id = request.args.get('id')
+            author_last_name = s_a.author_of_book.split(" ")[1]
+            author_first_name_ini = s_a.author_of_book.split(" ")[0][0]
+            citation = f"{author_last_name}, {author_first_name_ini}. ({s_a.year}). {s_a.name}. {s_a.place_of_publication}: {s_a.publisher}."
+            txt = BytesIO()
+            txt.write(citation.encode("utf8"))
+
+
+            #output = BytesIO()
+            #output.seek(0)
+            txt.seek(0)
+            return send_file(txt,
+                             attachment_filename='citation.txt',
+                             as_attachment=True, cache_timeout=-1)
+        except Exception as e:
+            response = Response(json.dumps(e), 404, mimetype="application/json")
+            return response
+
 
 @onlinedatabase_bp.route("/articles/upload", methods=['POST'])
 @crossdomain(origin='*')
