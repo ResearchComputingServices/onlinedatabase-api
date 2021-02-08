@@ -7,7 +7,7 @@ from onlinedatabase_api.web.common_view import onlinedatabase_bp
 from onlinedatabase_api.decorators.crossorigin import crossdomain
 from onlinedatabase_api.decorators.authentication import authentication
 from onlinedatabase_api.providers.article_provider import ArticleProvider
-from language2test_api.providers.user_provider import UserProvider
+from onlinedatabase_api.providers.user_provider import UserProvider
 import pandas as pd
 import math
 from io import BytesIO
