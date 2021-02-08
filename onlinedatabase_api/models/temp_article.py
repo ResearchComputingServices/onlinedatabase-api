@@ -4,8 +4,8 @@ from onlinedatabase_api.extensions import db, ma
 from sqlalchemy.orm import relationship
 
 
-class Article(BaseModel):
-    __tablename__ = 'article'
+class TempArticle(BaseModel):
+    __tablename__ = 'temp_article'
 
     source_type = db.Column(db.String())
     title_of_chapter_article = db.Column(db.String())
@@ -21,6 +21,9 @@ class Article(BaseModel):
     region_field = db.Column(db.String())
     other_keywords = db.Column(db.String())
     source = db.Column(db.String())
+
+
+
 
     def __init__(self, item):
         BaseModel.__init__(self, item)
@@ -41,15 +44,15 @@ class Article(BaseModel):
         self.source = item.get('source')
 
     def __repr__(self):
-        return '<article %r>' % self.name
+        return '<temp_article %r>' % self.name
 
 
 
 
 
-class ArticleSchema(BaseModelSchema):
+class TempArticleSchema(BaseModelSchema):
     class Meta:
-        model = Article
+        model = TempArticle
 
     # immutable = fields.Boolean()
     source_type = fields.String()
