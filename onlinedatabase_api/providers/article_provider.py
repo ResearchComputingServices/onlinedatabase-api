@@ -37,5 +37,7 @@ class ArticleProvider(BaseProvider):
         article.region_field = data.get('region_field')
         article.other_keywords = data.get('other_keywords')
         article.source = data.get('source')
+        article.status = data.get('status')
+        article.operator = data.get('operator')
 
         return article

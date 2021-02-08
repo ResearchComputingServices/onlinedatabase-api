@@ -21,6 +21,8 @@ class Article(BaseModel):
     region_field = db.Column(db.String())
     other_keywords = db.Column(db.String())
     source = db.Column(db.String())
+    status = db.Column(db.String())
+    operator = db.Column(db.String())
 
     def __init__(self, item):
         BaseModel.__init__(self, item)
@@ -39,6 +41,8 @@ class Article(BaseModel):
         self.region_field = item.get('region_field')
         self.other_keywords = item.get('other_keywords')
         self.source = item.get('source')
+        self.status = item.get('status')
+        self.operator = item.get('operator')
 
     def __repr__(self):
         return '<article %r>' % self.name
@@ -66,3 +70,5 @@ class ArticleSchema(BaseModelSchema):
     region_field = fields.String()
     other_keywords = fields.String()
     source = fields.String()
+    status = fields.String()
+    operator = fields.String()

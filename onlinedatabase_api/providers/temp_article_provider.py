@@ -37,5 +37,6 @@ class TempArticleProvider(BaseProvider):
         temp_article.region_field = data.get('region_field')
         temp_article.other_keywords = data.get('other_keywords')
         temp_article.source = data.get('source')
-
+        temp_article.status = data.get('status')
+        temp_article.operator = data.get('operator')
         return temp_article

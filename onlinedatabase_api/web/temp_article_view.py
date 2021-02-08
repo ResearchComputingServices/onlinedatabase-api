@@ -55,6 +55,8 @@ def get_temp_article():
 def add_temp_article():
     try:
         data = request.get_json()
+        data["status"] = "Pending"
+        data["operator"] = user_provider.get_authenticated_user().name
         temp_article = provider.add(data)
         result = temp_article_schema.dump(temp_article)
         response = jsonify(result)
@@ -165,34 +167,40 @@ def upload_temp_articles():
     return response
 
 
-@onlinedatabase_bp.route("/temp_articles/decline", methods=['DELETE'])
+@onlinedatabase_bp.route("/temp_articles/decline", methods=['PUT'])
 @crossdomain(origin='*')
 @authentication
 def decline_temp_article():
     try:
         user = user_provider.get_authenticated_user()
-        is_researcher_administrator = user_provider.has_role(user, 'Researcher') or user_provider.has_role(user,
-                                                                                                           'Administrator')
+        is_researcher_administrator = user_provider.has_role(user, 'Researcher') or user_provider.has_role(user, 'Administrator')
+
         if is_researcher_administrator:
             data = request.get_json()
             temp_article = TempArticle.query.filter_by(id=data.get('id')).first()
             if not temp_article:
                 temp_article = TempArticle.query.filter_by(name=data.get('name')).first()
             if temp_article:
-                db.session.delete(temp_article)
+                if data.get('id') is None:
+                    data['id'] = temp_article.id
+                data["status"] = "Declined"
+                data["operator"] = user_provider.get_authenticated_user().name
+                provider.update(data, temp_article)
                 db.session.commit()
                 response = Response(json.dumps(data), 200, mimetype="application/json")
             else:
                 response = Response(json.dumps(data), 404, mimetype="application/json")
+
         else:
             error = {"message": "Access Denied"}
             response = Response(json.dumps(error), 403, mimetype="application/json")
     except Exception as e:
         error = {"exception": str(e), "message": "Exception has occurred. Check the format of the request."}
         response = Response(json.dumps(error), 500, mimetype="application/json")
+
     return response
 
-@onlinedatabase_bp.route("/articles/approve", methods=['POST', 'DELETE'])
+@onlinedatabase_bp.route("/temp_articles/approve", methods=['POST'])
 @crossdomain(origin='*')
 @authentication
 def approve_temp_article():
@@ -201,22 +209,13 @@ def approve_temp_article():
         is_researcher_administrator = user_provider.has_role(user, 'Researcher') or user_provider.has_role(user,
                                                                                                            'Administrator')
         if is_researcher_administrator:
-            if request.method == 'POST':
-                data = request.get_json()
-                article = article_provider.add(data)
-                result = article_schema.dump(article)
-                response = jsonify(result)
-            else:
-                data = request.get_json()
-                temp_article = TempArticle.query.filter_by(id=data.get('id')).first()
-                if not temp_article:
-                    temp_article = TempArticle.query.filter_by(name=data.get('name')).first()
-                if temp_article:
-                    db.session.delete(temp_article)
-                    db.session.commit()
-                    response = Response(json.dumps(data), 200, mimetype="application/json")
-                else:
-                    response = Response(json.dumps(data), 404, mimetype="application/json")
+            data = request.get_json()
+            data["status"] = "Approved"
+            data["operator"] = user_provider.get_authenticated_user().name
+            article = article_provider.add(data)
+            result = article_schema.dump(article)
+            response = jsonify(result)
+            update_status_to_approve_temp_article(data)
         else:
             error = {"message": "Access Denied"}
             response = Response(json.dumps(error), 403, mimetype="application/json")
@@ -226,3 +225,15 @@ def approve_temp_article():
         response = Response(json.dumps(error), 500, mimetype="application/json")
 
     return response
+
+def update_status_to_approve_temp_article(data):
+    temp_article = TempArticle.query.filter_by(id=data.get('id')).first()
+    if not temp_article:
+        temp_article = TempArticle.query.filter_by(name=data.get('name')).first()
+    if temp_article:
+        if data.get('id') is None:
+            data['id'] = temp_article.id
+        data["status"] = "Approved"
+        data["operator"] = user_provider.get_authenticated_user().name
+        provider.update(data, temp_article)
+        db.session.commit()
