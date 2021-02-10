@@ -35,12 +35,18 @@ def get_temp_article_count():
 @authentication
 def get_temp_article():
     try:
+        id = request.args.get('id')
         user = user_provider.get_authenticated_user()
         is_researcher_administrator = user_provider.has_role(user, 'Researcher') or user_provider.has_role(user, 'Administrator')
         if is_researcher_administrator:
-            properties = provider.query_all(TempArticle)
-            result = temp_article_schema_many.dump(properties)
-            response = jsonify(result)
+            if id:
+                properties = TempArticle.query.filter_by(id=id).first()
+                result = temp_article_schema.dump(properties)
+                return jsonify(result)
+            else:
+                properties = provider.query_all(TempArticle)
+                result = temp_article_schema_many.dump(properties)
+                response = jsonify(result)
         else:
             error = {"message": "Access Denied"}
             response = Response(json.dumps(error), 403, mimetype="application/json")
