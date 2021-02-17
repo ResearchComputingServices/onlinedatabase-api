@@ -287,36 +287,189 @@ def delete_article():
 @crossdomain(origin='*')
 @authentication
 def export_articles():
-    specific_ids = request.args.get('id')
-    if specific_ids is None:
-        try:
-            records = []
-            articles = Article.query.all()
-            for i in range(len(articles)):
-                s_a = Article.query.filter_by(id=(i + 1)).first()
+    try:
+        id = request.args.get('id')
+        name = request.args.get('name')
 
-                records.append({
-                    "ID": s_a.id,
-                    "Source Type": s_a.source_type,
-                    "Title": s_a.name,
-                    "Title of chapter, article": s_a.title_of_chapter_article,
-                    "Page range (chapter, article)": s_a.page_range,
-                    "Author of book": s_a.author_of_book,
-                    "Author of Chapter, article": s_a.author_of_chapter_article,
-                    "Publisher": s_a.publisher,
-                    "Place of publication": s_a.place_of_publication,
-                    "Year": s_a.year,
-                    "Language": s_a.language,
-                    "Variety studied": s_a.variety_studied,
-                    "Language feature studied": s_a.language_feature_studied,
-                    "Region field": s_a.region_field,
-                    "Other Keywords": s_a.other_keywords,
-                    "Source": s_a.source
-                })
+        source_type = request.args.get('source_type')
+        title_of_chapter_article = request.args.get('title_of_chapter_article')
+        page_range = request.args.get('page_range')
+        author_of_book = request.args.get('author_of_book')
+        author_of_chapter_article = request.args.get('author_of_chapter_article')
+        publisher = request.args.get('publisher')
+        place_of_publication = request.args.get('place_of_publication')
+        year = request.args.get('year')
+        language = request.args.get('language')
+        variety_studied = request.args.get('variety_studied')
+        language_feature_studied = request.args.get('language_feature_studied')
+        region_field = request.args.get('region_field')
+        other_keywords = request.args.get('other_keywords')
+        source = request.args.get('source')
+
+        properties = provider.query_all(Article)
+
+        if id:
+            properties = Article.query.filter_by(id=id).first()
+            result = article_schema.dump(properties)
+            return jsonify(result)
+
+        result_list = []
+
+        if name:
+            name = name.lower()
+            name_ids = []
+            for res_name in properties:
+                if name in res_name.name.lower():
+                    name_ids.append(res_name.id)
+            result_list.append(name_ids)
+
+        if source_type:
+            source_type = source_type.lower()
+            source_type_ids = []
+            for res_source_type in properties:
+                if source_type in res_source_type.source_type.lower():
+                    source_type_ids.append(res_source_type.id)
+            result_list.append(source_type_ids)
+
+        if title_of_chapter_article:
+            title_of_chapter_article = title_of_chapter_article.lower()
+            title_of_chapter_article_ids = []
+            for res_title_of_chapter_article in properties:
+                if title_of_chapter_article in res_title_of_chapter_article.title_of_chapter_article.lower():
+                    title_of_chapter_article_ids.append(res_title_of_chapter_article.id)
+            result_list.append(title_of_chapter_article_ids)
+
+        if page_range:
+            # page_range = page_range.lower()
+            page_range_ids = []
+            for res_page_range in properties:
+                if page_range in res_page_range.page_range.lower():
+                    page_range_ids.append(res_page_range.id)
+            result_list.append(page_range_ids)
+
+        if author_of_book:
+            author_of_book = author_of_book.lower()
+            author_of_book_ids = []
+            for res_author_of_book in properties:
+                if author_of_book in res_author_of_book.author_of_book.lower():
+                    author_of_book_ids.append(res_author_of_book.id)
+            result_list.append(author_of_book_ids)
+
+        if author_of_chapter_article:
+            author_of_chapter_article = author_of_chapter_article.lower()
+            author_of_chapter_article_ids = []
+            for res_author_of_chapter_article in properties:
+                if author_of_chapter_article in res_author_of_chapter_article.author_of_chapter_article.lower():
+                    author_of_chapter_article_ids.append(res_author_of_chapter_article.id)
+            result_list.append(author_of_chapter_article_ids)
+
+        if publisher:
+            publisher = publisher.lower()
+            publisher_ids = []
+            for res_publisher in properties:
+                if publisher in res_publisher.publisher.lower():
+                    publisher_ids.append(res_publisher.id)
+            result_list.append(publisher_ids)
+
+        if place_of_publication:
+            place_of_publication = place_of_publication.lower()
+            place_of_publication_ids = []
+            for res_place_of_publication in properties:
+                if place_of_publication in res_place_of_publication.place_of_publication.lower():
+                    place_of_publication_ids.append(res_place_of_publication.id)
+            result_list.append(place_of_publication_ids)
+
+        if variety_studied:
+            variety_studied = variety_studied.lower()
+            variety_studied_ids = []
+            for res_variety_studied in properties:
+                if variety_studied in res_variety_studied.variety_studied.lower():
+                    variety_studied_ids.append(res_variety_studied.id)
+            result_list.append(variety_studied_ids)
+
+        if year:
+            year_ids = []
+            for res_year in properties:
+                if year in res_year.year:
+                    year_ids.append(res_year.id)
+            result_list.append(year_ids)
+
+        if language:
+            language = language.lower()
+            language_ids = []
+            for res_language in properties:
+                if language in res_language.language.lower():
+                    language_ids.append(res_language.id)
+            result_list.append(language_ids)
+
+        if language_feature_studied:
+            language_feature_studied = language_feature_studied.lower()
+            language_feature_studied_ids = []
+            for res_language_feature_studied in properties:
+                if language_feature_studied in res_language_feature_studied.language_feature_studied.lower():
+                    language_feature_studied_ids.append(res_language_feature_studied.id)
+            result_list.append(language_feature_studied_ids)
+
+        if region_field:
+            region_field = region_field.lower()
+            region_field_ids = []
+            for res_region_field in properties:
+                if region_field in res_region_field.region_field.lower():
+                    region_field_ids.append(res_region_field.id)
+            result_list.append(region_field_ids)
+
+        if other_keywords:
+            other_keywords = other_keywords.lower()
+            other_keywords_ids = []
+            for res_other_keywords in properties:
+                if other_keywords in res_other_keywords.other_keywords.lower():
+                    other_keywords_ids.append(res_other_keywords.id)
+            result_list.append(other_keywords_ids)
+
+        if source:
+            source = source.lower()
+            source_ids = []
+            for res_source in properties:
+                if source in res_source.source.lower():
+                    source_ids.append(res_source.id)
+            result_list.append(source_ids)
+
+        if len(result_list) > 2:
+            intersection_fields_result_list = list(set(result_list[0]).intersection(set(result_list[1])))
+            for i in range(2, len(result_list)):
+                intersection_fields_result_list = list(
+                    set(intersection_fields_result_list).intersection(set(result_list[i])))
+        elif len(result_list) == 2:
+            intersection_fields_result_list = list(set(result_list[0]).intersection(set(result_list[1])))
+        elif len(result_list) == 1:
+            intersection_fields_result_list = result_list[0]
+        else:
+            result = article_schema_many.dump(properties)
+        for specific_id in intersection_fields_result_list:
+            specific_users_info = []
+            s_a = Article.query.filter_by(id=specific_id).first()
+            specific_users_info.append({
+                "ID": s_a.id,
+                "Source Type": s_a.source_type,
+                "Title": s_a.name,
+                "Title of chapter, article": s_a.title_of_chapter_article,
+                "Page range (chapter, article)": s_a.page_range,
+                "Author of book": s_a.author_of_book,
+                "Author of Chapter, article": s_a.author_of_chapter_article,
+                "Publisher": s_a.publisher,
+                "Place of publication": s_a.place_of_publication,
+                "Year": s_a.year,
+                "Language": s_a.language,
+                "Variety studied": s_a.variety_studied,
+                "Language feature studied": s_a.language_feature_studied,
+                "Region field": s_a.region_field,
+                "Other Keywords": s_a.other_keywords,
+                "Source": s_a.source
+            })
 
             output = BytesIO()
             with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                pd.DataFrame(records).to_excel(writer,
+                pd.DataFrame(specific_users_info).to_excel(writer,
                                                sheet_name="articles",
                                                index=False)
                 workbook = writer.book
@@ -336,70 +489,12 @@ def export_articles():
                              attachment_filename="Articles" + '.xlsx',
                              mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                              as_attachment=True, cache_timeout=-1)
-        except Exception as e:
-            error = {"exception": str(e), "message": "Exception has occurred. Check the format of the request."}
-            response = Response(json.dumps(error), 404, mimetype="application/json")
-            return response
+    except Exception as e:
+        error = {"exception": str(e), "message": "Exception has occurred. Check the format of the request."}
+        response = Response(json.dumps(error), 404, mimetype="application/json")
+        return response
 
-    if specific_ids is not None:
-        try:
-            '''name = request.args.get('name')
-            if name is None:
-                article_id = request.args.get('id')
-                s_a = Article.query.filter_by(id=article_id).first()
-                name = s_a.name
-                s_a = Article.query.filter_by(name=name).first()
-            else:
-                article_id = request.args.get('id')'''
-            specific_users_info = []
-            for article_id in specific_ids:
-                s_a = Article.query.filter_by(id=article_id).first()
 
-                specific_users_info.append({
-                    "ID": s_a.id,
-                    "Source Type": s_a.source_type,
-                    "Title": s_a.name,
-                    "Title of chapter, article": s_a.title_of_chapter_article,
-                    "Page range (chapter, article)": s_a.page_range,
-                    "Author of book": s_a.author_of_book,
-                    "Author of Chapter, article": s_a.author_of_chapter_article,
-                    "Publisher": s_a.publisher,
-                    "Place of publication": s_a.place_of_publication,
-                    "Year": s_a.year,
-                    "Language": s_a.language,
-                    "Variety studied": s_a.variety_studied,
-                    "Language feature studied": s_a.language_feature_studied,
-                    "Region field": s_a.region_field,
-                    "Other Keywords": s_a.other_keywords,
-                    "Source": s_a.source
-                })
-
-            output = BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                pd.DataFrame(specific_users_info).to_excel(writer,
-                                                          sheet_name="articles",
-                                                          index=False)
-                workbook = writer.book
-                worksheet = writer.sheets["articles"]
-                format = workbook.add_format()
-                format.set_align('center')
-                format.set_align('vcenter')
-                worksheet.set_column('A:A', 12, format)
-                worksheet.set_column('B:B', 38, format)
-                worksheet.set_column('C:C', 22, format)
-                worksheet.set_column('D:D', 38, format)
-                worksheet.set_column('E:E', 15, format)
-                worksheet.set_column('F:F', 18, format)
-                writer.save()
-
-            output.seek(0)
-            return send_file(output,
-                             attachment_filename="Articles" + '.xlsx',
-                             mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                             as_attachment=True, cache_timeout=-1)
-        except Exception as e:
-            response = Response(json.dumps(e), 404, mimetype="application/json")
-            return response
 
 @onlinedatabase_bp.route("/articles/citation", methods=['GET'])
 @crossdomain(origin='*')
