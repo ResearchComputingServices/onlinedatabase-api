@@ -449,21 +449,23 @@ def upload_articles():
                 if type(d["Title"]) == str:
                     article = {
                         "id": provider.generate_id(field=Article.id),
-                        "name": d["Title"],
-                        "source_type": d["Source Type"],
-                        "title_of_chapter_article": d["Title of chapter, article"],
-                        "page_range": d["Page range (chapter, article)"],
-                        "author_of_book": d["Author of book"],
-                        "author_of_chapter_article": d["Author of Chapter, article"],
-                        "publisher": d["Publisher"],
-                        "place_of_publication": d["Place of publication"],
-                        "year": d["Year"],
-                        "language": d["Language"],
-                        "variety_studied": d["Variety studied"],
-                        "language_feature_studied": d["Language feature studied"],
-                        "region_field": d["Region field"],
-                        "other_keywords": d["Other Keywords"],
-                        "source": d["Source"]
+                        "name": str(d["Title"]),
+                        "source_type": "" if type(d["Source Type"]) == float else str(d["Source Type"]),
+                        "title_of_chapter_article": "" if type(d["Title of chapter, article"]) == float else str(d["Title of chapter, article"]),
+                        "page_range": "" if type(d["Page range (chapter, article)"]) == float else str(d["Page range (chapter, article)"]),
+                        "author_of_book": "" if type(d["Author of book"]) == float else str(d["Author of book"]),
+                        "author_of_chapter_article": "" if type(d["Author of Chapter, article"]) else str(d["Author of Chapter, article"]),
+                        "publisher": "" if type(d["Publisher"]) == float else str(d["Publisher"]),
+                        "place_of_publication": "" if type(d["Place of publication"]) == float else str(d["Place of publication"]),
+                        "year": "" if type(d["Year"]) == float else str(d["Year"]),
+                        "language": "" if type(d["Language"]) == float else str(d["Language"]),
+                        "variety_studied": "" if type(d["Variety studied"]) == float else str(d["Variety studied"]),
+                        "language_feature_studied": "" if type(d["Language feature studied"]) else str(d["Language feature studied"]),
+                        "region_field": "" if type(d["Region field"]) == float else str(d["Region field"]),
+                        "other_keywords": "" if type(d["Other Keywords"]) == float else str(d["Other Keywords"]),
+                        "source": "" if type(d["Source"]) == float else str(d["Source"]),
+                        "status": "Approved",
+                        "operator": user_provider.get_authenticated_user().name
                     }
 
                     articles = Article(article)
