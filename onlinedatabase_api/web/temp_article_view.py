@@ -94,6 +94,8 @@ def update_temp_article():
             if temp_article:
                 if data.get('id') is None:
                     data['id'] = temp_article.id
+                data["status"] = "Pending"
+                data["operator"] = user_provider.get_authenticated_user().name
                 provider.update(data, temp_article)
                 db.session.commit()
                 response = Response(json.dumps(data), 200, mimetype="application/json")
