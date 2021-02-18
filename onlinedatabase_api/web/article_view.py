@@ -444,8 +444,7 @@ def export_articles():
         elif len(result_list) == 1:
             intersection_fields_result_list = result_list[0]
         else:
-            #result = article_schema_many.dump(properties)
-            intersection_fields_result_list = []
+            intersection_fields_result_list = get_all_article_ids()
         specific_users_info = []
         for specific_id in intersection_fields_result_list:
 
@@ -585,7 +584,6 @@ def export_all_articles():
     try:
         articles = Article.query.all()
         result = article_schema_many.dump(articles)
-        print(result)
 
         specific_users_info = []
         for s_a in result:
@@ -634,3 +632,11 @@ def export_all_articles():
         error = {"exception": str(e), "message": "Exception has occurred. Check the format of the request."}
         response = Response(json.dumps(error), 404, mimetype="application/json")
         return response
+
+def get_all_article_ids():
+    articles = Article.query.all()
+    result = article_schema_many.dump(articles)
+    article_ids = []
+    for article in result:
+        article_ids.append(article['id'])
+    return article_ids
