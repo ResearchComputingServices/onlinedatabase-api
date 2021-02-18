@@ -577,62 +577,6 @@ def upload_articles():
 
     return response
 
-@onlinedatabase_bp.route("/articles/exportall", methods=['GET'])
-@crossdomain(origin='*')
-@authentication
-def export_all_articles():
-    try:
-        articles = Article.query.all()
-        result = article_schema_many.dump(articles)
-
-        specific_users_info = []
-        for s_a in result:
-            specific_users_info.append({
-                "ID": s_a['id'],
-                "Source Type": s_a['source_type'],
-                "Title": s_a['name'],
-                "Title of chapter, article": s_a['title_of_chapter_article'],
-                "Page range (chapter, article)": s_a['page_range'],
-                "Author of book": s_a['author_of_book'],
-                "Author of Chapter, article": s_a['author_of_chapter_article'],
-                "Publisher": s_a['publisher'],
-                "Place of publication": s_a['place_of_publication'],
-                "Year": s_a['year'],
-                "Language": s_a['language'],
-                "Variety studied": s_a['variety_studied'],
-                "Language feature studied": s_a['language_feature_studied'],
-                "Region field": s_a['region_field'],
-                "Other Keywords": s_a['other_keywords'],
-                "Source": s_a['source']
-            })
-
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            pd.DataFrame(specific_users_info).to_excel(writer,
-                                           sheet_name="articles",
-                                           index=False)
-            workbook = writer.book
-            worksheet = writer.sheets["articles"]
-            format = workbook.add_format()
-            format.set_align('center')
-            format.set_align('vcenter')
-            worksheet.set_column('A:A', 12, format)
-            worksheet.set_column('B:B', 38, format)
-            worksheet.set_column('C:C', 22, format)
-            worksheet.set_column('D:D', 38, format)
-            worksheet.set_column('E:E', 15, format)
-            worksheet.set_column('F:F', 18, format)
-            writer.save()
-        output.seek(0)
-        return send_file(output,
-                         attachment_filename="Articles" + '.xlsx',
-                         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                         as_attachment=True, cache_timeout=-1)
-    except Exception as e:
-        error = {"exception": str(e), "message": "Exception has occurred. Check the format of the request."}
-        response = Response(json.dumps(error), 404, mimetype="application/json")
-        return response
-
 def get_all_article_ids():
     articles = Article.query.all()
     result = article_schema_many.dump(articles)
