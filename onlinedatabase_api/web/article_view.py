@@ -515,14 +515,13 @@ def generate_citation_articles():
             author_last_name = s_a.author_of_book.split(" ")[1]
             author_first_name_ini = s_a.author_of_book.split(" ")[0][0]
             citation = f"{author_last_name}, {author_first_name_ini}. ({s_a.year}). {s_a.name}. {s_a.place_of_publication}: {s_a.publisher}."
-            txt = BytesIO()
-            txt.write(citation.encode("utf8"))
-
-
-            #output = BytesIO()
-            #output.seek(0)
-            txt.seek(0)
-            return send_file(txt,
+            #txt = BytesIO()
+            #txt.write(citation.encode("utf8"))
+            output = BytesIO()
+            output.write(citation.encode("utf8"))
+            output.seek(0)
+            #txt.seek(0)
+            return send_file(output,
                              attachment_filename='citation.txt',
                              as_attachment=True, cache_timeout=-1)
         except Exception as e:
