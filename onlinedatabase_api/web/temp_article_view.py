@@ -281,7 +281,6 @@ def export_temp_articles():
             "Other Keywords": "",
             "Source": ""
         }]
-
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             pd.DataFrame(specific_users_info).to_excel(writer,
