@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, send_file
 from flask import json, jsonify, Response, blueprints
 from onlinedatabase_api.models.role import Role, RoleSchema
 from onlinedatabase_api.models.temp_article import TempArticle, TempArticleSchema
