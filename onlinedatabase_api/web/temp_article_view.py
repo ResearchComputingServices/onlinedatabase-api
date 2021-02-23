@@ -257,3 +257,54 @@ def update_status_to_approve_temp_article(data):
         data["operator"] = user_provider.get_authenticated_user().name
         provider.update(data, temp_article)
         db.session.commit()
+
+@onlinedatabase_bp.route("/temp_articles/export", methods=['GET'])
+@crossdomain(origin='*')
+@authentication
+def export_temp_articles():
+    try:
+        specific_users_info = [{
+            # "ID": s_a.id,
+            "Source Type": "",
+            "Title": "",
+            "Title of chapter, article": "",
+            "Page range (chapter, article)": "",
+            "Author of book": "",
+            "Author of Chapter, article": "",
+            "Publisher": "",
+            "Place of publication": "",
+            "Year": "",
+            "Language": "",
+            "Variety studied": "",
+            "Language feature studied": "",
+            "Region field": "",
+            "Other Keywords": "",
+            "Source": ""
+        }]
+
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            pd.DataFrame(specific_users_info).to_excel(writer,
+                                           sheet_name="template",
+                                           index=False)
+            workbook = writer.book
+            worksheet = writer.sheets["template"]
+            format = workbook.add_format()
+            format.set_align('center')
+            format.set_align('vcenter')
+            worksheet.set_column('A:A', 12, format)
+            worksheet.set_column('B:B', 38, format)
+            worksheet.set_column('C:C', 22, format)
+            worksheet.set_column('D:D', 38, format)
+            worksheet.set_column('E:E', 15, format)
+            worksheet.set_column('F:F', 18, format)
+            writer.save()
+        output.seek(0)
+        return send_file(output,
+                         attachment_filename="Template" + '.xlsx',
+                         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                         as_attachment=True, cache_timeout=-1)
+    except Exception as e:
+        error = {"exception": str(e), "message": "Exception has occurred. Check the format of the request."}
+        response = Response(json.dumps(error), 404, mimetype="application/json")
+        return response
