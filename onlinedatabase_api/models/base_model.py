@@ -6,7 +6,7 @@ class BaseModel(db.Model):
     __abstract__ = True
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(), unique=True, nullable=False)
+    name = db.Column(db.String(), unique=False, nullable=False)
     created_datetime = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
 
     def __init__(self, item):
