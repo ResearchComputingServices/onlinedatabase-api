@@ -117,5 +117,38 @@
             }
         ],
         "fields": []
+    },
+    {
+        "name": "testcontributor",
+        "first_name": "Test",
+        "last_name": "Contributor",
+        "roles": [
+            {
+                "name": "Contributor"
+            }
+        ],
+        "fields": []
+    },
+    {
+        "name": "testresearcher",
+        "first_name": "Test",
+        "last_name": "Researcher",
+        "roles": [
+            {
+                "name": "Researcher"
+            }
+        ],
+        "fields": []
+    },
+        {
+        "name": "testadmin",
+        "first_name": "Test",
+        "last_name": "Administrator",
+        "roles": [
+            {
+                "name": "Administrator"
+            }
+        ],
+        "fields": []
     }
 ]

@@ -2,11 +2,12 @@ from marshmallow import Schema, fields, ValidationError, pre_load
 from onlinedatabase_api.models.base_model import BaseModel, BaseModelSchema
 from onlinedatabase_api.extensions import db, ma
 from sqlalchemy.orm import relationship
+import datetime
 
-
-class Article(BaseModel):
+class Article(db.Model):
     __tablename__ = 'article'
-
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String())
     source_type = db.Column(db.String())
     title_of_chapter_article = db.Column(db.String())
     page_range = db.Column(db.String())
@@ -23,10 +24,12 @@ class Article(BaseModel):
     source = db.Column(db.String())
     status = db.Column(db.String())
     operator = db.Column(db.String())
+    created_datetime = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
 
     def __init__(self, item):
-        BaseModel.__init__(self, item)
-
+        #BaseModel.__init__(self, item)
+        self.id = item.get('id')
+        self.name = item.get('name')
         self.source_type = item.get('source_type')
         self.title_of_chapter_article = item.get('title_of_chapter_article')
         self.page_range = item.get('page_range')
@@ -51,11 +54,13 @@ class Article(BaseModel):
 
 
 
-class ArticleSchema(BaseModelSchema):
+class ArticleSchema(ma.ModelSchema):
     class Meta:
         model = Article
 
     # immutable = fields.Boolean()
+    id = fields.Integer(dump_only=True)
+    name = fields.String()
     source_type = fields.String()
     title_of_chapter_article = fields.String()
     page_range = fields.String()
