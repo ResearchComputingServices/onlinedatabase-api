@@ -18,7 +18,7 @@ class BaseModel(db.Model):
         return '<base_model %r>' % self.id
 
 
-# class BaseModelSchema(ma.ModelSchema):
-class BaseModelSchema(ma.SQLAlchemySchema):
+class BaseModelSchema(ma.ModelSchema):
+#class BaseModelSchema(ma.SQLAlchemySchema):
     id = fields.Integer(dump_only=True)
     name = fields.String()
